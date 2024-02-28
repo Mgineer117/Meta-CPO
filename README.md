@@ -12,6 +12,6 @@ Develop your meta-learning environments and store each one in the **_envs_** lis
 
 ### Code Reference
 * [Khrylx/PyTorch-RL](https://github.com/Khrylx/PyTorch-RL)
-* [SapanaChaudhary/PyTorch-CPO] (https://github.com/SapanaChaudhary/PyTorch-CPO)
+* [SapanaChaudhary/PyTorch-CPO](https://github.com/SapanaChaudhary/PyTorch-CPO)
 
 
