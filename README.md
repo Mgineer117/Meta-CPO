@@ -1,28 +1,17 @@
-# PyTorch implementation of Constrained Policy Optimization (CPO)
-This repository has a simple to understand and use implementation of [CPO](https://arxiv.org/abs/1705.10528) in PyTorch. A dummy constraint function is included and can be adapted based on your needs. 
+# PyTorch implementation of Meta-Constrained Policy Optimization (CPO)
+This repository is an adaptation of the CPO algorithm, as presented in the paper [https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf], transforming it into a Meta-learning framework. The modification involves leveraging Differentiable Convex Programming to facilitate the relaxation of gradient computations between parameters. The integration of CPO into the meta-learning framework was achieved through the application of the model-free meta-framework introduced by MAML [https://proceedings.mlr.press/v70/finn17a/finn17a.pdf]. The primary objective of this algorithm is to undergo testing within the Safety Gymnasium [https://github.com/PKU-Alignment/safety-gymnasium], offering an intuitive experimental platform to showcase its effectiveness in the context of Autonomous Driving tasks.
 
 ## Pre-requisites
-- [PyTorch](https://pytorch.org/get-started/previous-versions/#v120) (The code is tested on PyTorch 1.2.0.) 
-- OpenAI [Gym](https://github.com/openai/gym).
-- MuJoCo [(mujoco-py)](https://github.com/openai/mujoco-py)
-- If working with a GPU, set OMP_NUM_THREADS to 1 using:
-```
-export OMP_NUM_THREADS=1
-```
-
-## Features 
-1. Tensorboard integration to track learning.
-2. Best model is tracked and saved using the value and standard deviation of average reward.
+- CPO [https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf]
+- MAML [https://proceedings.mlr.press/v70/finn17a/finn17a.pdf]
+- Safety Gymnasium [https://github.com/PKU-Alignment/safety-gymnasium]
+- Differentiable Convex Programming [https://locuslab.github.io/2019-10-28-cvxpylayers/]
 
 ### Usage
-* python algos/main.py --env-name CartPole-v1 --algo-name=CPO --exp-num=1 --exp-name=CPO/CartPole --save-intermediate-model=10 --gpu-index=0 --max-iter=500
+Develop your meta-learning environments and store each one in the **_envs_** list within the main.py script. Subsequently, execute the code to observe the functionality of your implemented environments.
 
 ### Code Reference
 * [Khrylx/PyTorch-RL](https://github.com/Khrylx/PyTorch-RL)
-
-### Technical Details on CPO
-![main](cpo_theory/main.png "CPO main problem")
-![feasible](cpo_theory/feasible.png "CPO feasible solution")
-![infeasible](cpo_theory/infeasible.png "CPO infeasible solution")
+* [SapanaChaudhary/PyTorch-CPO] (https://github.com/SapanaChaudhary/PyTorch-CPO)
 
 
