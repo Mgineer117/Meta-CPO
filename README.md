@@ -22,7 +22,7 @@ pip install -r requirements.txt
 This will install all the necessary packages listed in the requirements.txt file into your conda environment.
 
 
-To execute experiments, ensure that you have the relevant custom meta-environments in the directory. If not, please refer to the "Custom Environment" section below. Then, run the following command:
+To execute experiments, **ensure that you have the relevant custom meta-environments in the directory.** If not, please refer to the "Custom Environment" section below. Then, run the following command:
 ```
 python3 main.py
 ```
