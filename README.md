@@ -8,7 +8,7 @@ This repository is an adaptation of the [CPO algorithm](https://proceedings.mlr.
 - [Differentiable Convex Programming](https://locuslab.github.io/2019-10-28-cvxpylayers/)
 
 ### Usage
-Develop your meta-learning environments and store each one in the **_envs_** list within the main.py script. Subsequently, execute the code to observe the functionality of your implemented environments.
+Our objective is to evaluate adaptive performance across various environmental parameters. To facilitate this, we've developed custom environments with randomly assigned environmental parameters. For reproducibility, we provide the "stochastic_circle_level.zip" package, which should be placed in your Safety Gym directory: /safety_gymnasium/tasks/safe_navigation/circle.... For guidance on creating your own environments, please refer to Table 1 of [our paper](https://ojs.aaai.org/index.php/AAAI/article/view/30088/31916) and the [Safety Gym](https://safety-gymnasium.readthedocs.io/en/latest/components_of_environments/tasks/task_example.html) documentation.
 
 ### Code Reference
 * [Khrylx/PyTorch-RL](https://github.com/Khrylx/PyTorch-RL)
