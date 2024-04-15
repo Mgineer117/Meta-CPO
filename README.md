@@ -31,7 +31,7 @@ python3 main.py
 
 ### Custom Environment
 Our objective is to evaluate adaptive performance across various environmental parameters. To facilitate this, we've developed custom environments with randomly assigned environmental parameters. For reproducibility, we provide the ```"stochastic_circle_level.zip"``` package in this file, which should be placed in your Safety Gym directory: ```/safety_gymnasium/tasks/safe_navigation/circle....``` 
-
+## Details of files
 The given file is for **circle** task and ```env_level_0``` is used as a fixed environment to evaluate training performance, ```env_level_1``` is to generate environments with stochastic environmental parameters, and ```env_level_2``` is to generate meta_testing environment.
 
 
