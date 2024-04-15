@@ -16,7 +16,7 @@ conda create --name myenv python==3.10.*
 conda activate myenv
 ```
 Then, install the required packages using pip:
-```bash
+```
 pip install -r requirements.txt
 ```
 This will install all the necessary packages listed in the requirements.txt file into your conda environment.
