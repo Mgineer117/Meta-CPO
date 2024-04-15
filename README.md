@@ -4,6 +4,10 @@ This repository is an adaptation of the [CPO algorithm](https://proceedings.mlr.
 ## Simulation
 ![PB_CPOMeta](https://github.com/Mgineer117/Meta-CPO/assets/117319319/8bf5b6c7-1ba7-43d3-a880-ca61c13b7de1) ![PB_CPO](https://github.com/Mgineer117/Meta-CPO/assets/117319319/7d93614f-7f94-4f4e-a199-5cf4f1c1da88)
 
+https://github.com/Mgineer117/Meta-CPO/assets/117319319/6cfe9eb0-12ee-4e5f-84eb-550484b8c505
+
+
+
 
 ## Pre-requisites
 - [Constrained Policy Optimization](https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf)
