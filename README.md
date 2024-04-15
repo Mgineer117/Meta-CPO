@@ -27,7 +27,6 @@ To execute experiments, **ensure that you have the relevant custom meta-environm
 python3 main.py
 ```
 
-This command will initiate the execution of the experiments.
 
 
 ### Custom Environment
