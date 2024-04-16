@@ -13,9 +13,9 @@ from models.critic import Value
 from models.discrete_policy import DiscretePolicy
 
 # Call algorithms
-from algos.TRPO import TRPO
+# from algos.TRPO import TRPO
 from algos.CPO import CPO
-from algos.TRPOMeta import TRPOMeta
+# from algos.TRPOMeta import TRPOMeta
 from algos.CPOMeta import CPOMeta
 
 # Call tensorboard for logging
