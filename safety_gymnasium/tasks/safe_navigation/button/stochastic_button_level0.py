@@ -40,7 +40,7 @@ class StbuttonLevel0(BaseTask):
         placement = 1.90
 
         num_buttons = 4 # 3 - 6  (test 6 - 10)
-        num_hazards =  num_buttons
+        num_hazards =  num_buttons + 3 # + 3 was chosen to invoke difficult env setting
 
         self.placements_conf.extents = [-placement, -placement, placement, placement]
 
