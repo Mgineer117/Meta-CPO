@@ -39,8 +39,8 @@ class StbuttonLevel0(BaseTask):
         super().__init__(config=config)
         placement = 1.90
 
-        num_buttons = 5 # 2 - 8  (test 12)
-        num_hazards =  num_buttons + 3
+        num_buttons = 4 # 3 - 6  (test 6 - 10)
+        num_hazards =  num_buttons
 
         self.placements_conf.extents = [-placement, -placement, placement, placement]
 
