@@ -21,7 +21,7 @@ pip install -r requirements.txt
 ```
 
 
-In the code, we have already implemented testing domains within the safety_gymnasium folder specifically for the ```Button``` and ```Circle``` tasks to evaluate adaptive performance. If one wishes to evaluate and replicate in different environmental settings, they will need to implement their own custom environments and refer to the details in the 'Custom Environment' section below. To conduct experiments, choose any desired agent and set the environment as either ```Safety[Agent]Stcircle``` or ```Safety[Agent]Stbutton``` by specifying the env_name in utils/apr_parse.py. Then, execute the following command:
+In the code, we have already implemented testing domains within the safety_gymnasium folder specifically for the ```Button``` and ```Circle``` tasks to evaluate adaptive performance. If one wishes to evaluate and replicate in different environmental settings, they will need to implement their own custom environments and refer to the details in the **Custom Environment** section below. To conduct experiments, choose any desired agent and set the environment as either ```Safety[Agent]Stcircle``` or ```Safety[Agent]Stbutton``` by specifying the env_name in utils/apr_parse.py. Then, execute the following command:
 
 ```
 python3 main.py
@@ -29,15 +29,10 @@ python3 main.py
 
 
 ## Custom Environment
-To create your custom environments
-The given file is for **circle** task and ```env_level_0``` is used as a fixed environment to evaluate training performance, ```env_level_1``` is to generate environments with stochastic environmental parameters, and ```env_level_2``` is to generate meta_testing environment.
-
-
-For guidance on creating your own environments, please refer to Table 1 of [our paper](https://ojs.aaai.org/index.php/AAAI/article/view/30088/31916) and the [Safety Gym](https://safety-gymnasium.readthedocs.io/en/latest/components_of_environments/tasks/task_example.html) documentation.
+To create your custom environments, we refer to [Safety Gym](https://safety-gymnasium.readthedocs.io/en/latest/components_of_environments/tasks/task_example.html) documentation, our code implementation in safety_gym folder "safety_gymnasium/tasks/safe_navigation/, and Table 1 of [our paper](https://ojs.aaai.org/index.php/AAAI/article/view/30088/31916). In our implementation ```task_level_0``` is used as a fixed environment to evaluate training performance, ```task_level_1``` is to generate environments with stochastic environmental parameters, and ```task_level_2``` is to generate meta_testing environment. Other minor changes may be required to adapt to its safety gym package.
 
 
 ## Simulation
-
 
 
 https://github.com/Mgineer117/Meta-CPO/assets/117319319/bd3a751c-ce76-45e9-a7d1-881e6c0ec172 
