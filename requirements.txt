@@ -6,3 +6,4 @@ tensorboard == 2.13.0
 torch == 2.0.1
 safety-gymnasium == 1.0.0
 numpy == 1.23.5
+mujoco == 2.3.3
