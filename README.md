@@ -21,7 +21,7 @@ pip install -r requirements.txt
 ```
 
 
-In the code, we have already implemented testing domains within the safety_gymnasium folder specifically for the ```Button``` and ```Circle``` tasks to evaluate adaptive performance (it is in ```safety_gymnasium/tasks/safe_savigation/```). If one wishes to evaluate and replicate in different environmental settings, they will need to implement their own custom environments and refer to the details in the **Custom Environment** section below. To conduct experiments, choose any desired agent and set the environment as either ```Safety[Agent]Stcircle``` or ```Safety[Agent]Stbutton``` by specifying the env_name in utils/apr_parse.py. Then, execute the following command with appropriate hyperparameter settings:
+In the code, we have already implemented testing domains within the safety_gymnasium folder specifically for the ```Button``` and ```Circle``` tasks to evaluate adaptive performance (it is in ```safety_gymnasium/tasks/safe_navigation/```). If one wishes to evaluate and replicate in different environmental settings, they will need to implement their own custom environments and refer to the details in the **Custom Environment** section below. To conduct experiments, choose any desired agent and set the environment as either ```Safety[Agent]Stcircle``` or ```Safety[Agent]Stbutton``` by specifying the env_name in utils/apr_parse.py. Then, execute the following command with appropriate hyperparameter settings:
 
 ```
 python3 main.py
