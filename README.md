@@ -6,7 +6,8 @@ This repository is an adaptation of the [CPO algorithm](https://proceedings.mlr.
 If you find Meta-CPO useful and informative, please cite it in your publications.
 
 ```bibtex
-@article{Cho_Sun_2024, title={Constrained Meta-Reinforcement Learning for Adaptable Safety Guarantee with Differentiable Convex Programming},
+@article{Cho_Sun_2024,
+title={Constrained Meta-Reinforcement Learning for Adaptable Safety Guarantee with Differentiable Convex Programming},
 volume={38},
 url={https://ojs.aaai.org/index.php/AAAI/article/view/30088},
 DOI={10.1609/aaai.v38i19.30088},
