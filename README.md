@@ -6,18 +6,15 @@ This repository is an adaptation of the [CPO algorithm](https://proceedings.mlr.
 If you find Meta-CPO useful and informative, please cite it in your publications.
 
 ```bibtex
-@article{Cho_Sun_2024,
-title={Constrained Meta-Reinforcement Learning for Adaptable Safety Guarantee with Differentiable Convex Programming},
-volume={38},
-url={https://ojs.aaai.org/index.php/AAAI/article/view/30088},
-DOI={10.1609/aaai.v38i19.30088},
-abstractNote={Despite remarkable achievements in artificial intelligence, the deployability of learning-enabled systems in high-stakes real-world environments still faces persistent challenges. For example, in safety-critical domains like autonomous driving, robotic manipulation, and healthcare, it is crucial not only to achieve high performance but also to comply with given constraints. Furthermore, adaptability becomes paramount in non-stationary domains, where environmental parameters are subject to change. While safety and adaptability are recognized as key qualities for the new generation of AI, current approaches have not demonstrated effective adaptable performance in constrained settings. Hence, this paper breaks new ground by studying the unique challenges of ensuring safety in nonstationary environments by solving constrained problems through the lens of the meta-learning approach (learning to learn). While unconstrained meta-learning already encounters complexities in end to end differentiation of the loss due to the bi-level nature, its constrained counterpart introduces an additional layer of difficulty, since the constraints imposed on task-level updates complicate the differentiation process. To address the issue, we first employ successive convex-constrained policy updates across multiple tasks with differentiable convex programming, which allows meta-learning in constrained scenarios by enabling end-to-end differentiation. This approach empowers the agent to rapidly adapt to new tasks under nonstationarity while ensuring compliance with safety constraints. We also provide a theoretical analysis demonstrating guaranteed monotonic improvement of our approach, justifying our algorithmic designs. Extensive simulations across diverse environments provide empirical validation with significant improvement over established benchmarks.},
-number={19},
-journal={Proceedings of the AAAI Conference on Artificial Intelligence},
-author={Cho, Minjae and Sun, Chuangchuang},
-year={2024},
-month={Mar.},
-pages={20975-20983} }
+@inproceedings{cho2024constrained,
+  title={Constrained Meta-Reinforcement Learning for Adaptable Safety Guarantee with Differentiable Convex Programming},
+  author={Cho, Minjae and Sun, Chuangchuang},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={38},
+  number={19},
+  pages={20975--20983},
+  year={2024}
+}
 
 ```
 
