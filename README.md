@@ -28,6 +28,8 @@ If you find Meta-CPO useful and informative, please cite it in your publications
 
 
 ## Usage
+**Note: There is a known issue with the Python multiprocessing module. This issue prevents the use of multiprocessing to accelerate the sampling process.**
+
 To create a conda environment, run the following commands:
 
 ```bash
