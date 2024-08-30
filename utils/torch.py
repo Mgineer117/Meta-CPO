@@ -11,12 +11,30 @@ ones = torch.ones
 zeros = torch.zeros
 
 
+def select_device(gpu_idx=0):
+    print(
+        "============================================================================================"
+    )
+    # set device to cpu or cuda
+    device = torch.device("cpu")
+    if (torch.cuda.is_available()) and gpu_idx is not None:
+        device = torch.device("cuda:" + str(gpu_idx))
+        torch.cuda.empty_cache()
+        print("Device set to : " + str(torch.cuda.get_device_name(device)))
+    else:
+        print("Device set to : cpu")
+    print(
+        "============================================================================================"
+    )
+    return device
+
+
 def to_device(device, *args):
     return [x.to(device) for x in args]
 
 
 def get_flat_params_from(model):
-    #pdb.set_trace()
+    # pdb.set_trace()
     params = []
     for param in model.parameters():
         params.append(param.view(-1))
@@ -30,7 +48,8 @@ def set_flat_params_to(model, flat_params):
     for param in model.parameters():
         flat_size = int(np.prod(list(param.size())))
         param.data.copy_(
-            flat_params[prev_ind:prev_ind + flat_size].view(param.size()))
+            flat_params[prev_ind : prev_ind + flat_size].view(param.size())
+        )
         prev_ind += flat_size
 
 
@@ -49,7 +68,9 @@ def get_flat_grad_from(inputs, grad_grad=False):
     return flat_grad
 
 
-def compute_flat_grad(output, inputs, filter_input_ids=set(), retain_graph=False, create_graph=False):
+def compute_flat_grad(
+    output, inputs, filter_input_ids=set(), retain_graph=False, create_graph=False
+):
     if create_graph:
         retain_graph = True
 
@@ -59,13 +80,17 @@ def compute_flat_grad(output, inputs, filter_input_ids=set(), retain_graph=False
         if i not in filter_input_ids:
             params.append(param)
 
-    grads = torch.autograd.grad(output, params, retain_graph=retain_graph, create_graph=create_graph)
+    grads = torch.autograd.grad(
+        output, params, retain_graph=retain_graph, create_graph=create_graph
+    )
 
     j = 0
     out_grads = []
     for i, param in enumerate(inputs):
         if i in filter_input_ids:
-            out_grads.append(zeros(param.view(-1).shape, device=param.device, dtype=param.dtype))
+            out_grads.append(
+                zeros(param.view(-1).shape, device=param.device, dtype=param.dtype)
+            )
         else:
             out_grads.append(grads[j].view(-1))
             j += 1
