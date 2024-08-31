@@ -32,7 +32,7 @@ python3 main.py
 
 
 ## Custom Environment
-To create your custom environments, we refer to [Safety Gym](https://safety-gymnasium.readthedocs.io/en/latest/components_of_environments/tasks/task_example.html) documentation, our code implementation in safety_gym folder "safety_gymnasium/tasks/safe_navigation/, and Table 1 of [our paper](https://ojs.aaai.org/index.php/AAAI/article/view/30088/31916). In our implementation ```task_level_0``` is used as a fixed environment to evaluate training performance, ```task_level_1``` is to generate environments with stochastic environmental parameters, and ```task_level_2``` is used to generate a meta_testing environment. Other minor changes may be required to adapt to its safety gym package.
+To create your custom environments, we refer to [Safety Gym](https://safety-gymnasium.readthedocs.io/en/latest/components_of_environments/tasks/task_example.html) documentation, our code implementation in safety_gym folder ```safety_gymnasium/tasks/safe_navigation/```, and Table 1 of [our paper](https://ojs.aaai.org/index.php/AAAI/article/view/30088/31916). In our implementation ```task_level_0``` is used as a fixed environment to evaluate training performance, ```task_level_1``` is to generate environments with stochastic environmental parameters, and ```task_level_2``` is used to generate a meta_testing environment. Other minor changes may be required to adapt to its safety gym package.
 
 ## Citing Meta-CPO
 
