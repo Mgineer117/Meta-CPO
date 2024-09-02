@@ -73,7 +73,7 @@ def parse_all_arguments():
                     help='max kl value (default: 1e-2)')
     parser.add_argument('--max-constraint', type=float, default=10, metavar='G',
                     help='max constraint value (default: 10 ~ 20)')
-    parser.add_argument('--annealing_factor', type=float, default=1e-3, metavar='G',
+    parser.add_argument('--annealing_factor', type=float, default=1e-4, metavar='G',
                     help='annealing factor of constraint (default: 1e-3)')
     parser.add_argument('--anneal', default=True,
                     help='Should the constraint be annealed or not')
