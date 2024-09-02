@@ -43,12 +43,11 @@ def collect_samples(pid, queue, env, policy,
     reward_episode_list = []
     c_reward_episode_list = []
     env_reward_episode_list = []
-    """
-    #randomize environment seed
-    seed = np.random.randint(1,1000)
-    env.seed(seed)
-    torch.manual_seed(seed)
-    """
+
+    if queue is not None:
+        # this is to apply different stochasity
+        # in replicate of main process
+        torch.manual_seed(seed + pid)
     
     while num_steps < min_batch_size:
         t0 = time.time()
@@ -179,8 +178,7 @@ def cpo_problem(param_size, dtype):
     return cvxpylayer
 
 class CPO:
-    def __init__(self, envs, policy_net, value_net, cost_net, args, dtype, 
-                 device, mean_action=False, running_state=None, num_threads=1):
+    def __init__(self, envs, policy_net, value_net, cost_net, args, mean_action=False, running_state=None, num_threads=1):
         self.envs = envs
         self.state_dim = envs[0].observation_space.shape[0]
         self.action_dim = envs[0].action_space.shape[0]
@@ -192,8 +190,8 @@ class CPO:
         self.min_batch = self.args.min_batch_size
         self.num_threads = self.args.num_threads
 
-        self.dtype = dtype
-        self.device = device
+        self.dtype = args.dtype
+        self.device = args.device
 
         self.policy_net = policy_net
         self.value_net = value_net
@@ -203,7 +201,16 @@ class CPO:
         self.cpo_problem = cpo_problem(self.param_size, self.dtype)
         self.trpo_problem = trpo_problem(self.param_size, self.dtype)
 
-    def line_search(self, model, reward_f, cost_f, x, fullstep, expected_reward_improve_full, expected_cost_improve_full, max_backtracks=30, accept_ratio=0.1):
+        self.loss_fn = torch.nn.MSELoss()
+        # value network is usually set higher lr than policy since it is a bottleneck in learning
+        if args.bfgs_iter_num is not None:
+            self.value_optimizer = torch.optim.LBFGS(self.value_net.parameters(), lr=args.critic_lr, max_iter=args.bfgs_iter_num)
+            self.cost_optimizer = torch.optim.LBFGS(self.cost_net.parameters(), lr=args.critic_lr, max_iter=args.bfgs_iter_num)
+        else:
+            self.value_optimizer = torch.optim.Adam(self.value_net.parameters(), lr=args.critic_lr)
+            self.cost_optimizer = torch.optim.Adam(self.cost_net.parameters(), lr=args.critic_lr)
+
+    def line_search(self, model, reward_f, cost_f, x, fullstep, expected_reward_improve_full, expected_cost_improve_full, max_backtracks=10, accept_ratio=0.1):
         reward_fval = reward_f(True).item()
         cost_fval = cost_f(True).item()
         
@@ -217,20 +224,13 @@ class CPO:
             actual_reward_improve = reward_fval - reward_fval_new  
             actual_cost_improve = cost_fval - cost_fval_new
 
+            expected_reward_improve = expected_reward_improve_full * stepfrac
+            expected_cost_improve = expected_cost_improve_full * stepfrac
 
-            #expected_reward_improve = expected_reward_improve_full * stepfrac
-            #expected_cost_improve = expected_cost_improve_full * stepfrac
-
-            #print('actual: ', actual_reward_improve, 'expected: ', expected_reward_improve)
-            #print('actual: ', actual_cost_improve, 'expected: ', expected_cost_improve)
-
-            #r_ratio = actual_reward_improve / expected_reward_improve
-            #c_ratio = actual_cost_improve / expected_cost_improve
-            #if r_ratio > accept_ratio and c_ratio > accept_ratio:
-            if torch.norm(stepfrac * fullstep) <= self.args.max_kl  and actual_reward_improve > 0 and actual_cost_improve > 0:
-                print('step mean: ', abs(stepfrac * fullstep).mean())
+            r_ratio = actual_reward_improve / expected_reward_improve
+            c_ratio = actual_cost_improve / expected_cost_improve
+            if torch.norm(stepfrac * fullstep) <= self.args.max_kl and r_ratio > accept_ratio and c_ratio > accept_ratio:
                 return True, x_new
-        print('Line search Failed')    
         return False, x
     
     def collect_samples(self, env, seed):
@@ -275,19 +275,54 @@ class CPO:
         actions = torch.from_numpy(np.stack(batch.action)[:self.args.max_batch_size]).to(self.dtype).to(self.device)
         rewards = torch.from_numpy(np.stack(batch.reward)[:self.args.max_batch_size]).to(self.dtype).to(self.device)
         masks = torch.from_numpy(np.stack(batch.mask)[:self.args.max_batch_size]).to(self.dtype).to(self.device)
-        #c_states = states[:,12:]
 
-        with torch.no_grad():
-            reward_values = self.value_net(states)
-
-        with torch.no_grad():
-            cost_values = self.cost_net(states)
+        reward_values = self.value_net(states)
+        cost_values = self.cost_net(states)
 
         """get advantage estimation from the trajectories"""
-        reward_advantages, reward_returns = estimate_advantages(rewards, masks, reward_values, self.args.gamma, self.args.tau, self.device)
-        cost_advantages, cost_returns = estimate_advantages(costs, masks, cost_values, self.args.gamma, self.args.tau, self.device)
+        reward_advantages, reward_returns = estimate_advantages(rewards, masks, reward_values.clone().detach(), self.args.gamma, self.args.tau, self.device)
+        cost_advantages, cost_returns = estimate_advantages(costs, masks, cost_values.clone().detach(), self.args.gamma, self.args.tau, self.device)
         constraint_value = estimate_constraint_value(costs, masks, self.args.gamma, self.device)
         
+        reward_value_loss = self.loss_fn(reward_values, reward_returns)
+        cost_value_loss = self.loss_fn(cost_values, cost_returns)
+
+        if self.args.bfgs_iter_num is not None:
+            def r_closure():
+                self.value_optimizer.zero_grad()
+                r_pred = self.value_net(states)
+                v_loss = self.loss_fn(r_pred, reward_returns)
+                for param in self.value_net.parameters():
+                    v_loss += param.pow(2).sum() * self.args.l2_reg
+                v_loss.backward()
+                # gradient clipping for stability
+                torch.nn.utils.clip_grad_norm_(self.value_net.parameters(), max_norm=1.0)
+                return v_loss
+
+            def c_closure():
+                self.cost_optimizer.zero_grad()
+                c_pred = self.cost_net(states)
+                c_loss = self.loss_fn(c_pred, cost_returns)
+                for param in self.cost_net.parameters():
+                    c_loss += param.pow(2).sum() * self.args.l2_reg
+                c_loss.backward()
+                # gradient clipping for stability
+                torch.nn.utils.clip_grad_norm_(self.cost_net.parameters(), max_norm=1.0)
+                return c_loss
+            
+            self.value_optimizer.step(r_closure)
+            self.cost_optimizer.step(c_closure)
+        else:
+            self.value_optimizer.zero_grad()
+            reward_value_loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.value_net.parameters(), max_norm=1.0)
+            self.value_optimizer.step()
+
+            self.cost_optimizer.zero_grad()
+            cost_value_loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.cost_net.parameters(), max_norm=1.0)
+            self.cost_optimizer.step()
+
         """update policy"""
         with torch.no_grad():
             fixed_log_probs = self.policy_net.get_log_prob(states, actions)
@@ -304,40 +339,6 @@ class CPO:
                 log_probs = self.policy_net.get_log_prob(states, actions)
                 action_loss = cost_advantages * torch.exp(log_probs - fixed_log_probs)
                 return action_loss.mean()
-        
-        r_optim = torch.optim.LBFGS(self.value_net.parameters(), lr=0.1, max_iter=20)
-        c_optim = torch.optim.LBFGS(self.cost_net.parameters(), lr=0.1, max_iter=20)
-
-        get_value_loss = torch.nn.MSELoss()
-
-        #for i in range(10):    
-        def r_closure():
-            r_optim.zero_grad()
-            r_pred = self.value_net(states)
-            #print('r comparison: ', r_pred[0][0], reward_returns[0][0])
-            r_loss = get_value_loss(r_pred, reward_returns)
-            for param in self.value_net.parameters():
-                r_loss += param.pow(2).sum() * self.args.l2_reg
-            r_loss.backward()
-            return r_loss
-        
-        r_optim.step(r_closure)
-
-        #for i in range(10):    
-        def c_closure():
-            c_optim.zero_grad()
-            c_pred = self.cost_net(states)
-            #print('c comparison: ', c_pred[0][0], cost_returns[0][0])
-            c_loss = get_value_loss(c_pred, cost_returns)
-            for param in self.cost_net.parameters():
-                c_loss += param.pow(2).sum() * self.args.l2_reg
-            c_loss.backward()
-            return c_loss
-        
-        c_optim.step(c_closure)
-
-        r_value_loss = get_value_loss(reward_values, reward_returns)
-        c_value_loss = get_value_loss(cost_values, cost_returns)
 
         reward_loss = get_reward_loss()
         cost_loss = get_cost_loss()
@@ -385,9 +386,9 @@ class CPO:
                                               expected_reward_improve, expected_cost_improve)
             set_flat_params_to(self.policy_net, new_params)
 
-            return r_value_loss, c_value_loss, reward_loss, cost_loss
+            return reward_value_loss.item(), cost_value_loss.item(), reward_loss, cost_loss
 
-        return r_value_loss, c_value_loss, reward_loss, cost_loss
+        return reward_value_loss.item(), cost_value_loss.item(), reward_loss, cost_loss
 
     def meta_test(self, writer):
         print("Start meta-testing")
@@ -510,7 +511,6 @@ class CPO:
             costs =  torch.from_numpy(np.stack(eval_batch.cost)[:self.args.max_batch_size]).to(self.dtype).to(self.device) #[:args.batch_size]
             masks = torch.from_numpy(np.stack(eval_batch.mask)[:self.args.max_batch_size]).to(self.dtype).to(self.device)
             eval_cost = estimate_constraint_value(costs, masks, self.args.gamma, self.device)[0].to(torch.device('cpu'))
-            print('cost: ',eval_cost)
 
             # update eval lists
             eval_avg_reward.append(eval_log['env_avg_reward'])
@@ -518,13 +518,13 @@ class CPO:
             eval_avg_cost.append(eval_cost)
 
             # update tensorboard summaries
-            writer.add_scalars('critic_losses', {'v_loss':v_loss}, i_iter)
-            writer.add_scalars('critic_losses', {'c_loss':c_loss}, i_iter)
-            writer.add_scalars('policy_losses', {'reward_loss':reward_loss}, i_iter)
-            writer.add_scalars('policy_losses', {'cost_loss':cost_loss}, i_iter)
-            writer.add_scalar('rewards', eval_log['env_avg_reward'], i_iter)  
-            writer.add_scalar('costs', eval_cost, i_iter)  
-            writer.add_scalar('std_reward', eval_log['std_reward'], i_iter)
+            writer.add_scalar('CriticLoss/reward_value_loss', v_loss, i_iter)
+            writer.add_scalar('CriticLoss/cost_value_loss', c_loss, i_iter)
+            writer.add_scalar('PolicyLoss/reward_advantage_loss', reward_loss, i_iter)
+            writer.add_scalar('PolicyLoss/cost_advantage_loss', cost_loss, i_iter)
+            writer.add_scalar('Training/rewards', eval_log['env_avg_reward'], i_iter)  
+            writer.add_scalar('Training/costs', eval_cost, i_iter)  
+            writer.add_scalar('Training/reward_std', eval_log['std_reward'], i_iter)
 
             # print learning data on screen     
             if i_iter % self.args.log_interval == 0:
@@ -556,5 +556,5 @@ class CPO:
         save_info_obj.dump_lists(best_avg_reward, num_of_steps, num_of_episodes, total_num_episodes, 
                                  total_num_steps, rewards_std, env_avg_reward, v_loss_list, c_loss_list, reward_loss_list, cost_loss_list,
                                  eval_avg_reward, eval_avg_reward_std, eval_avg_cost, meta_avg_cost)
-        print(iter_for_best_avg_reward, 'Best eval R:', best_avg_reward, "best std:", best_std)
+        print("Best iter: ", iter_for_best_avg_reward, 'Best eval Reward:', best_avg_reward, "best reward std:", best_std)
         return best_avg_reward, best_std, iter_for_best_avg_reward 

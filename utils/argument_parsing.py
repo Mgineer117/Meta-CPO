@@ -31,10 +31,14 @@ def parse_all_arguments():
                         help='discount factor (default: 0.99)')
     parser.add_argument('--tau', type=float, default=0.95, metavar='G',
                         help='gae (default: 0.95)')
-    parser.add_argument('--l2-reg', type=float, default=1e-4, metavar='G',
+    parser.add_argument('--l2-reg', type=float, default=1e-5, metavar='G',
                         help='l2 regularization of value function (default: 1e-4)')
-    parser.add_argument('--learning-rate', type=float, default=1e-4, metavar='G',
+    parser.add_argument('--bfgs-iter-num', type=int, default=10, metavar='G',
+                        help='if it is set to None, Adam is used (default: 10)')
+    parser.add_argument('--policy-lr', type=float, default=1e-4, metavar='G',
                         help='learning rate (default: 1e-4)')
+    parser.add_argument('--critic-lr', type=float, default=1e-3, metavar='G',
+                        help='learning rate (default: 1e-3)')
     
     # GPU index, multi-threading and seeding
     parser.add_argument('--gpu-index', type=int, default=0, metavar='N')
@@ -44,13 +48,13 @@ def parse_all_arguments():
                         help='random seed (default: 0)')
     
     # batch size and iteration number
-    parser.add_argument('--min-batch-size', type=int, default=2000, metavar='N',
+    parser.add_argument('--min-batch-size', type=int, default=3000, metavar='N',
                         help='minimal batch size per PPO update (default: 2000)')
-    parser.add_argument('--max-batch-size', type=int, default=2000, metavar='N',
+    parser.add_argument('--max-batch-size', type=int, default=3000, metavar='N',
                         help='maximum batch size per PPO update (default: 2000)')
     parser.add_argument('--time-horizon', type=int, default=500, metavar='N',
                         help='time step for one horizon (default: 500)')
-    parser.add_argument('--max-iter-num', type=int, default=1000, metavar='N',
+    parser.add_argument('--max-iter-num', type=int, default=1, metavar='N',
                         help='maximal number of main iterations (default: 500)')
     parser.add_argument('--meta-iter-num', type=int, default=50, metavar='N',
                         help='maximal number of main iterations (default: 100)')                       
@@ -60,25 +64,21 @@ def parse_all_arguments():
     # logging and saving models
     parser.add_argument('--log-interval', type=int, default=1, metavar='N',
                         help='interval between training status logs (default: 10)')
-    parser.add_argument('--save-model-interval', type=int, default=10, metavar='N',
+    parser.add_argument('--save-model-interval', type=int, default=2, metavar='N',
                         help="interval between saving model (default: 0, means don't save)")
-    parser.add_argument('--save-intermediate-model', type=int, default=10, metavar='N',
+    parser.add_argument('--save-intermediate-model', type=int, default=2, metavar='N',
                         help="intermediate model saving interval (default: 0, means don't save)")
-       
-    print(parser.parse_args().algo_name)
-    if parser.parse_args().algo_name == "CPOMeta" or"CPO":
-        parser.add_argument('--max-kl', type=float, default=1e-3, metavar='G',
-                        help='max kl value (default: 1e-2)')
-        parser.add_argument('--damping', type=float, default=1e-2, metavar='G',
-                        help='damping (default: 1e-2)')
-        parser.add_argument('--max-constraint', type=float, default=10, metavar='G',
-                        help='max constraint value (default: 10 ~ 20)')
-        parser.add_argument('--annealing_factor', type=float, default=1e-2, metavar='G',
-                        help='annealing factor of constraint (default: 1e-2)')
-        parser.add_argument('--anneal', default=True,
-                        help='Should the constraint be annealed or not')
-        parser.add_argument('--grad-norm', default=True,
-                        help='Should the norm of policy gradient be taken (default: False)')    
+
+    parser.add_argument('--max-kl', type=float, default=1e-3, metavar='G',
+                    help='max kl value (default: 1e-2)')
+    parser.add_argument('--max-constraint', type=float, default=10, metavar='G',
+                    help='max constraint value (default: 10 ~ 20)')
+    parser.add_argument('--annealing_factor', type=float, default=1e-3, metavar='G',
+                    help='annealing factor of constraint (default: 1e-3)')
+    parser.add_argument('--anneal', default=True,
+                    help='Should the constraint be annealed or not')
+    parser.add_argument('--grad-norm', default=True,
+                    help='Should the norm of policy gradient be taken (default: False)')    
     
     return parser.parse_args()
 
