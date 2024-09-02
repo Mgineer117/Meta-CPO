@@ -22,19 +22,18 @@ Then, install the required packages using pip:
 ```
 pip install -r requirements.txt
 ```
-## Note
-The following error may arise
-
-**Please consider re-formulating your problem so that it is always solvable or increasing the number of solver iterations.**
-
-This is attributed to the insolvable CPO problem that is natural since CPO sometimes does not have a solution where naive TRPO problem to the cost will be utilized.
-
 
 In the code, we have already implemented testing domains within the safety_gymnasium folder specifically for the ```Button``` and ```Circle``` tasks to evaluate adaptive performance (it is in ```safety_gymnasium/tasks/safe_navigation/```). If one wishes to evaluate and replicate in different environmental settings, they will need to implement their own custom environments and refer to the details in the **Custom Environment** section below. To conduct experiments, choose any desired agent and set the environment as either ```Safety[Agent]Stcircle``` or ```Safety[Agent]Stbutton``` by specifying the env_name in utils/apr_parse.py. Then, execute the following command with appropriate hyperparameter settings:
 
 ```
 python3 main.py
 ```
+## Note
+The following error may arise
+
+**Please consider re-formulating your problem so that it is always solvable or increasing the number of solver iterations.**
+
+This is attributed to the insolvable CPO problem that is natural since CPO sometimes does not have a solution where naive TRPO problem to the cost will be utilized.
 
 
 ## Custom Environment
