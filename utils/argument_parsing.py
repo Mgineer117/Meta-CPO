@@ -20,9 +20,9 @@ def parse_all_arguments():
     parser.add_argument('--model-path', metavar='G', #default="post_training/",
                         help='path of pre-trained model')
     parser.add_argument('--is-meta-test', default=False,
-                        help='path of pre-trained model')
+                        help='do the meta-testing after training')
     parser.add_argument('--update-iter-num', metavar='N', type=int, default=0, 
-                        help='path of pre-trained model')
+                        help='iter num for meta-test')
 
     # Learning rates and regularizations
     parser.add_argument('--log-std', type=float, default=-0.0, metavar='G',
@@ -32,24 +32,24 @@ def parse_all_arguments():
     parser.add_argument('--tau', type=float, default=0.95, metavar='G',
                         help='gae (default: 0.95)')
     parser.add_argument('--l2-reg', type=float, default=1e-4, metavar='G',
-                        help='l2 regularization of value function (default: 1e-3)')
+                        help='l2 regularization of value function (default: 1e-4)')
     parser.add_argument('--learning-rate', type=float, default=1e-4, metavar='G',
-                        help='gae (default: 3e-4)')
+                        help='learning rate (default: 1e-4)')
     
     # GPU index, multi-threading and seeding
     parser.add_argument('--gpu-index', type=int, default=0, metavar='N')
     parser.add_argument('--num-threads', type=int, default=4, metavar='N',
-                        help='number of threads for agent (default: 4)')
+                        help='number of threads for multiprocessing (default: 4)')
     parser.add_argument('--seed', type=int, default=0, metavar='N',
-                        help='random seed (default: 1)')
+                        help='random seed (default: 0)')
     
     # batch size and iteration number
     parser.add_argument('--min-batch-size', type=int, default=2000, metavar='N',
-                        help='minimal batch size per PPO update (default: 2048)')
+                        help='minimal batch size per PPO update (default: 2000)')
     parser.add_argument('--max-batch-size', type=int, default=2000, metavar='N',
                         help='maximum batch size per PPO update (default: 2000)')
     parser.add_argument('--time-horizon', type=int, default=500, metavar='N',
-                        help='maximum batch size per PPO update (default: 2000)')
+                        help='time step for one horizon (default: 500)')
     parser.add_argument('--max-iter-num', type=int, default=1000, metavar='N',
                         help='maximal number of main iterations (default: 500)')
     parser.add_argument('--meta-iter-num', type=int, default=50, metavar='N',
@@ -60,9 +60,9 @@ def parse_all_arguments():
     # logging and saving models
     parser.add_argument('--log-interval', type=int, default=1, metavar='N',
                         help='interval between training status logs (default: 10)')
-    parser.add_argument('--save-model-interval', type=int, default=50, metavar='N',
+    parser.add_argument('--save-model-interval', type=int, default=10, metavar='N',
                         help="interval between saving model (default: 0, means don't save)")
-    parser.add_argument('--save-intermediate-model', type=int, default=100, metavar='N',
+    parser.add_argument('--save-intermediate-model', type=int, default=10, metavar='N',
                         help="intermediate model saving interval (default: 0, means don't save)")
        
     print(parser.parse_args().algo_name)
@@ -71,8 +71,8 @@ def parse_all_arguments():
                         help='max kl value (default: 1e-2)')
         parser.add_argument('--damping', type=float, default=1e-2, metavar='G',
                         help='damping (default: 1e-2)')
-        parser.add_argument('--max-constraint', type=float, default=5, metavar='G',
-                        help='max constraint value (default: 1e-2)')
+        parser.add_argument('--max-constraint', type=float, default=10, metavar='G',
+                        help='max constraint value (default: 10 ~ 20)')
         parser.add_argument('--annealing_factor', type=float, default=1e-2, metavar='G',
                         help='annealing factor of constraint (default: 1e-2)')
         parser.add_argument('--anneal', default=True,
