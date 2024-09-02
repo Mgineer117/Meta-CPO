@@ -363,8 +363,9 @@ class CPO:
         max_constraint = torch.tensor(self.args.max_constraint, dtype=self.dtype)
 
         b = (constraint_value[0] - max_constraint).to(self.device)
-        print('b: ', b)
-        
+        if self.args.anneal:
+            self.args.max_constraint -= self.args.annealing_factor * self.args.max_constraint
+            
         try:
             step, = self.cpo_problem(g, max_kl, a, b)
             #print('step mean: ', abs(step).mean())
