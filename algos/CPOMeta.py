@@ -246,6 +246,80 @@ class CPOMeta:
 
         torch.set_num_threads(1)  # to prevent CPU overscryption
 
+    def meta_line_search(self, x, batch, fullstep, max_backtracks=20):
+        '''
+        Backtracking linesearch for meta update
+        '''
+        states = torch.from_numpy(np.stack(batch.state)).to(self.dtype).to(self.device)
+        costs = torch.from_numpy(np.stack(batch.cost)).to(self.dtype).to(self.device)
+        actions = (
+            torch.from_numpy(np.stack(batch.action)).to(self.dtype).to(self.device)
+        )
+        rewards = (
+            torch.from_numpy(np.stack(batch.reward)).to(self.dtype).to(self.device)
+        )
+        masks = torch.from_numpy(np.stack(batch.mask)).to(self.dtype).to(self.device)
+
+        with torch.no_grad():
+            values = self.value_net(states)
+            cost_values = self.cost_net(states)
+
+        advantages, _ = estimate_advantages(
+            rewards, masks, values, self.args.gamma, self.args.tau, self.device
+        )
+        cost_advantages, _ = estimate_advantages(
+            costs, masks, cost_values, self.args.gamma, self.args.tau, self.device
+        )
+
+        with torch.no_grad():
+            fixed_log_probs = self.meta_policy.get_log_prob(states, actions)
+
+        def get_reward_loss(volatile=False):
+            with torch.set_grad_enabled(not volatile):
+                log_probs = self.meta_policy.get_log_prob(states, actions)
+                action_loss = -advantages * torch.exp(log_probs - fixed_log_probs)
+                return action_loss.mean()
+
+        def get_cost_loss(volatile=False):
+            with torch.set_grad_enabled(not volatile):
+                log_probs = self.meta_policy.get_log_prob(states, actions)
+                cost_loss = cost_advantages * torch.exp(log_probs - fixed_log_probs)
+                return cost_loss.mean()
+
+        reward_loss = get_reward_loss()
+        cost_loss = get_cost_loss()
+
+        loss_reward_grad = torch.autograd.grad(
+            reward_loss, self.meta_policy.parameters()
+        )
+        grads = torch.cat([grad.view(-1) for grad in loss_reward_grad])
+        g = grads.clone().detach()
+
+        loss_cost_grad = torch.autograd.grad(cost_loss, self.meta_policy.parameters())
+        grads = torch.cat([grad.view(-1) for grad in loss_cost_grad])
+        a = grads.clone().detach()
+
+        reward_fval = get_reward_loss(True).item()
+        cost_fval = get_cost_loss(True).item()
+
+        for stepfrac in [0.5**x for x in range(max_backtracks)]:
+            x_new = x + stepfrac * fullstep
+            set_flat_params_to(self.meta_policy, x_new)
+
+            reward_fval_new = get_reward_loss(True).item()
+            cost_fval_new = get_reward_loss(True).item()
+
+            actual_reward_improve = reward_fval - reward_fval_new
+            actual_cost_improve = cost_fval - cost_fval_new
+
+            if (
+                torch.norm(stepfrac * fullstep) <= self.args.max_kl
+                and actual_cost_improve > 0 and actual_cost_improve > 0
+            ):
+                return True, x_new
+
+        return False, x
+    
     def line_search(self, model, reward_f, cost_f, x, fullstep, expected_reward_improve_full, expected_cost_improve_full, max_backtracks=10, accept_ratio=0.1):
         '''
         Backtracking linesearch for meta update
@@ -588,7 +662,7 @@ class CPOMeta:
             t1 = time.time()
             prev_params = get_flat_params_from(self.meta_policy)
             step = self.update(memory.sample(), step_only=True)
-            success, new_params, step = self.meta_line_search(
+            success, new_params = self.meta_line_search(
                 prev_params, memory.sample(), step
             )
             t2 = time.time()
