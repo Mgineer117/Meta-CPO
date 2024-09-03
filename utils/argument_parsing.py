@@ -9,7 +9,7 @@ def parse_all_arguments():
                        help='algorithm name')
     parser.add_argument('--exp-num', default="1", metavar='G',
                         help='Experiment number for today (default: 1)')
-    parser.add_argument('--exp-name', default="Exp-1", metavar='G',
+    parser.add_argument('--exp-name', default="Exp-2", metavar='G',
                         help='Experiment name')
     parser.add_argument('--env-name', default="SafetyCarStcircle", metavar='G',
                         help='name of the environment to run')
@@ -49,12 +49,12 @@ def parse_all_arguments():
     
     # batch size and iteration number
     parser.add_argument('--min-batch-size', type=int, default=3000, metavar='N',
-                        help='minimal batch size per PPO update (default: 2000)')
+                        help='minimal batch size per PPO update (default: 3000)')
     parser.add_argument('--max-batch-size', type=int, default=3000, metavar='N',
-                        help='maximum batch size per PPO update (default: 2000)')
+                        help='maximum batch size per PPO update (default: 3000)')
     parser.add_argument('--time-horizon', type=int, default=500, metavar='N',
                         help='time step for one horizon (default: 500)')
-    parser.add_argument('--max-iter-num', type=int, default=1, metavar='N',
+    parser.add_argument('--max-iter-num', type=int, default=500, metavar='N',
                         help='maximal number of main iterations (default: 500)')
     parser.add_argument('--meta-iter-num', type=int, default=50, metavar='N',
                         help='maximal number of main iterations (default: 100)')                       
