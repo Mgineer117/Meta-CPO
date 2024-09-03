@@ -108,7 +108,6 @@ def main_loop():
                 args.dtype,
                 args.device,
                 running_state=running_state,
-                num_threads=args.num_threads,
             )
             algo.train_CPO(writer, save_info_obj)
 
@@ -121,7 +120,6 @@ def main_loop():
                 writer,
                 args,
                 running_state=running_state,
-                num_threads=args.num_threads,
             )
             algo.train_CPOMeta(save_info_obj)
 

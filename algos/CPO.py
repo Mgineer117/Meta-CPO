@@ -178,7 +178,7 @@ def cpo_problem(param_size, dtype):
     return cvxpylayer
 
 class CPO:
-    def __init__(self, envs, policy_net, value_net, cost_net, args, mean_action=False, running_state=None, num_threads=1):
+    def __init__(self, envs, policy_net, value_net, cost_net, args, mean_action=False, running_state=None):
         self.envs = envs
         self.state_dim = envs[0].observation_space.shape[0]
         self.action_dim = envs[0].action_space.shape[0]
@@ -425,8 +425,8 @@ class CPO:
             print('{}\tT_sample {:.4f}  T_update {:.4f}\tC_avg/iter {:.2f}  Test_C_avg {:.2f}\tR_avg {:.2f}\tTest_R_avg {:.2f}\tTest_R_std {:.2f}'.format( 
             m_iter, sample_time, t2-t1, np.average(meta_avg_cost), eval_cost, log['env_avg_reward'], eval_log['env_avg_reward'], eval_log['std_reward']))   
 
-            writer.add_scalar('meta_rewards', eval_log['env_avg_reward'], m_iter)
-            writer.add_scalar('meta_costs', eval_cost, m_iter) 
+            writer.add_scalar('MetaTesting/rewards', eval_log['env_avg_reward'], m_iter)
+            writer.add_scalar('MetaTesting/costs', eval_cost, m_iter) 
 
             """clean up gpu memory"""
             torch.cuda.empty_cache()
