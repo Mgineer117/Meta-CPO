@@ -269,8 +269,8 @@ class CPOMeta:
             r_ratio = actual_reward_improve / expected_reward_improve
             c_ratio = actual_cost_improve / expected_cost_improve
             if torch.norm(stepfrac * fullstep) <= self.args.max_kl and r_ratio > accept_ratio and c_ratio > accept_ratio:
-                return True, x_new, stepfrac * fullstep
-        return False, x, torch.zeros(fullstep.numel()).to(self.device)
+                return True, x_new
+        return False, x
 
     def collect_samples(self, env, policy, seed):
         t_start = time.time()
