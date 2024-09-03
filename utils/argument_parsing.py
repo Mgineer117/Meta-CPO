@@ -54,7 +54,7 @@ def parse_all_arguments():
                         help='maximum batch size per PPO update (default: 3000)')
     parser.add_argument('--time-horizon', type=int, default=500, metavar='N',
                         help='time step for one horizon (default: 500)')
-    parser.add_argument('--max-iter-num', type=int, default=1, metavar='N',
+    parser.add_argument('--max-iter-num', type=int, default=1000, metavar='N',
                         help='maximal number of main iterations (default: 500)')
     parser.add_argument('--meta-iter-num', type=int, default=50, metavar='N',
                         help='maximal number of main iterations (default: 100)')                       
