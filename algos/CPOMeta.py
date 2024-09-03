@@ -514,7 +514,7 @@ class CPOMeta:
         expected_reward_improve = -loss_reward_grad.dot(step)
         expected_cost_improve = -loss_cost_grad.dot(step)
 
-        _, new_params = self.line_search(self.policy_net, get_reward_loss, get_cost_loss, prev_params, step,
+        _, new_params = self.line_search(policy, get_reward_loss, get_cost_loss, prev_params, step,
                                               expected_reward_improve, expected_cost_improve)
         set_flat_params_to(self.local_policy, new_params)
 
