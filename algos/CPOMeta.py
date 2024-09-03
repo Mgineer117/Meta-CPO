@@ -437,14 +437,14 @@ class CPOMeta:
 
         def get_reward_loss(volatile=False):
             with torch.set_grad_enabled(not volatile):
-                log_probs = self.policy_net.get_log_prob(states, actions)
+                log_probs = policy.get_log_prob(states, actions)
                 action_loss = -reward_advantages * torch.exp(log_probs - fixed_log_probs)
                 return action_loss.mean()
             
         """define the cost loss function for TRPO"""
         def get_cost_loss(volatile=False):
             with torch.set_grad_enabled(not volatile):
-                log_probs = self.policy_net.get_log_prob(states, actions)
+                log_probs = policy.get_log_prob(states, actions)
                 action_loss = cost_advantages * torch.exp(log_probs - fixed_log_probs)
                 return action_loss.mean()
 
