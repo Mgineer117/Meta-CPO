@@ -42,7 +42,7 @@ def parse_all_arguments():
     parser.add_argument('--gpu-index', type=int, default=0, metavar='N')
     parser.add_argument('--num-threads', type=int, default=4, metavar='N',
                         help='number of threads for multiprocessing (default: 4)')
-    parser.add_argument('--seed', type=int, default=2, metavar='N',
+    parser.add_argument('--seed', type=int, default=0, metavar='N',
                         help='random seed (default: 0)')
     
     # batch size and iteration number
