@@ -9,7 +9,7 @@ def parse_all_arguments():
                        help='algorithm name')
     parser.add_argument('--exp-num', default="1", metavar='G',
                         help='Experiment number for today (default: 1)')
-    parser.add_argument('--exp-name', default="Exp-3", metavar='G',
+    parser.add_argument('--exp-name', default="Exp-1", metavar='G',
                         help='Experiment name')
     parser.add_argument('--env-name', default="SafetyCarStcircle", metavar='G',
                         help='name of the environment to run')
@@ -56,7 +56,7 @@ def parse_all_arguments():
                         help='maximal number of main iterations (default: 500)')
     parser.add_argument('--meta-iter-num', type=int, default=50, metavar='N',
                         help='maximal number of main iterations (default: 100)')                       
-    parser.add_argument('--local-num', type=int, default=4, metavar='N',
+    parser.add_argument('--local-num', type=int, default=3, metavar='N',
                         help='maximal number of main iterations (default: 3)')
     
     # logging and saving models
