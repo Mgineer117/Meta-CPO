@@ -9,7 +9,7 @@ def parse_all_arguments():
                        help='algorithm name')
     parser.add_argument('--exp-num', default="1", metavar='G',
                         help='Experiment number for today (default: 1)')
-    parser.add_argument('--exp-name', default="Exp-1", metavar='G',
+    parser.add_argument('--exp-name', default="Exp-3", metavar='G',
                         help='Experiment name')
     parser.add_argument('--env-name', default="SafetyCarStcircle", metavar='G',
                         help='name of the environment to run')
@@ -33,10 +33,8 @@ def parse_all_arguments():
                         help='gae (default: 0.95)')
     parser.add_argument('--l2-reg', type=float, default=1e-5, metavar='G',
                         help='l2 regularization of value function (default: 1e-4)')
-    parser.add_argument('--bfgs-iter-num', type=int, default=10, metavar='G',
+    parser.add_argument('--bfgs-iter-num', type=int, default=25, metavar='G',
                         help='if it is set to None, Adam is used (default: 10)')
-    parser.add_argument('--policy-lr', type=float, default=1e-4, metavar='G',
-                        help='learning rate (default: 1e-4)')
     parser.add_argument('--critic-lr', type=float, default=1e-3, metavar='G',
                         help='learning rate (default: 1e-3)')
     
@@ -44,7 +42,7 @@ def parse_all_arguments():
     parser.add_argument('--gpu-index', type=int, default=0, metavar='N')
     parser.add_argument('--num-threads', type=int, default=4, metavar='N',
                         help='number of threads for multiprocessing (default: 4)')
-    parser.add_argument('--seed', type=int, default=0, metavar='N',
+    parser.add_argument('--seed', type=int, default=2, metavar='N',
                         help='random seed (default: 0)')
     
     # batch size and iteration number
@@ -69,11 +67,11 @@ def parse_all_arguments():
     parser.add_argument('--save-intermediate-model', type=int, default=2, metavar='N',
                         help="intermediate model saving interval (default: 0, means don't save)")
 
-    parser.add_argument('--max-kl', type=float, default=1e-3, metavar='G',
+    parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
     parser.add_argument('--max-constraint', type=float, default=10, metavar='G',
                     help='max constraint value (default: 10 ~ 20)')
-    parser.add_argument('--annealing_factor', type=float, default=1e-4, metavar='G',
+    parser.add_argument('--annealing_factor', type=float, default=1e-5, metavar='G',
                     help='annealing factor of constraint (default: 1e-3)')
     parser.add_argument('--anneal', default=True,
                     help='Should the constraint be annealed or not')

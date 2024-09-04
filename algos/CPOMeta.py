@@ -645,7 +645,7 @@ class CPOMeta:
             (step,) = self.projection(a, b, meta_step)
             return step
         except:
-            return torch.zeros(a.numel())
+            return torch.zeros(a.numel()).to(self.device)
 
     def meta_test(self):
         '''
