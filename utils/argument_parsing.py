@@ -13,7 +13,7 @@ def parse_all_arguments():
                         help='Experiment name')
     parser.add_argument('--env-name', default="SafetyCarStcircle", metavar='G',
                         help='name of the environment to run')
-    parser.add_argument('--env-num', type=int, default=4, metavar='G',
+    parser.add_argument('--env-num', type=int, default=3, metavar='G',
                         help='number of environments')
     
     # update with prev parameters
@@ -35,6 +35,8 @@ def parse_all_arguments():
                         help='l2 regularization of value function (default: 1e-4)')
     parser.add_argument('--bfgs-iter-num', type=int, default=25, metavar='G',
                         help='if it is set to None, Adam is used (default: 10)')
+    parser.add_argument('--policy-lr', type=float, default=1e-1, metavar='G',
+                        help='learning rate (default: 1e-3)')
     parser.add_argument('--critic-lr', type=float, default=1e-3, metavar='G',
                         help='learning rate (default: 1e-3)')
     
@@ -71,8 +73,8 @@ def parse_all_arguments():
                     help='max kl value (default: 1e-2)')
     parser.add_argument('--max-constraint', type=float, default=10, metavar='G',
                     help='max constraint value (default: 10 ~ 20)')
-    parser.add_argument('--annealing_factor', type=float, default=1e-5, metavar='G',
-                    help='annealing factor of constraint (default: 1e-3)')
+    parser.add_argument('--annealing_factor', type=float, default=1e-4, metavar='G',
+                    help='annealing factor of constraint (default: 1e-5)')
     parser.add_argument('--anneal', default=True,
                     help='Should the constraint be annealed or not')
     parser.add_argument('--grad-norm', default=True,

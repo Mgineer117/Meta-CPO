@@ -818,7 +818,7 @@ class CPOMeta:
             meta_step = self.project_step(memory.sample(), meta_step)
 
             prev_params = get_flat_params_from(self.meta_policy)
-            new_params = prev_params + meta_step
+            new_params = prev_params + self.args.policy_lr * meta_step
             set_flat_params_to(self.meta_policy, new_params)
 
             env_avg_reward.append(avg_reward)
